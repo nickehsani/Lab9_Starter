@@ -47,6 +47,14 @@
       width: 122px;
     }
   </style>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "33e1386cc10a4095bdfc54b25335526b"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                          
 </head>
 
 <body>
@@ -88,6 +96,7 @@
   </main>
 
   <script>
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -95,8 +104,32 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      //Step 3 using step 4's custom errors
+      try {
+        if (firstNum == ''){
+          throw new InputError("First field is empty");
+        }
+        if (secondNum == ''){
+          throw new InputError("Second field is empty");
+        }
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        console.log("Please type in an input!")
+      }
     });
+
+    window.addEventListener("error", (event) => {
+      console.log('Sadly an error happened my friend');
+    });
+    //Custom error class
+    class InputError extends Error {
+      constructor(item) {
+        super(item);
+        this.name = "Input Error";
+      }
+    }
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
@@ -166,9 +199,11 @@
       myTrace();
     });
     //Trigger a Global Error btn
-    errorBtns[13].addEventListener('click', () => {
+    errorBtns[14].addEventListener('click', () => {
       boom();
     });
+    
+    window.onerror = (error) => {TrackJS.track(error)};
   </script>
 </body>
 
